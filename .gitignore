@@ -168,3 +168,6 @@ secrets.json
 *.pfx
 *.p12
 *.key
+
+[Bb]in/
+[Ob]j/
