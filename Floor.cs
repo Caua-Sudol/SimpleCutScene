@@ -13,7 +13,7 @@ public class Floor
 
     public Rectangle floor;
     private Texture2D texture;
-    Color[] color;
+    private Color[] color;
 
     public void LoadContent(GraphicsDevice graphicsDevice, int wallWidth, int wallHeight)
     {
@@ -30,7 +30,6 @@ public class Floor
 
     public void Draw(SpriteBatch spriteBatch)
     {
-
         spriteBatch.Draw(texture, floor, Color.Green);
     }
 }
