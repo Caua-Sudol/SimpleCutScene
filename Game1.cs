@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO.Pipelines;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,7 +11,6 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private int windowWidth = 1920;
     private int windowHeight = 1080;
-    private GameMode _gameMode;
     private Camera _camera;
     private Scene _scene;
 
@@ -30,9 +27,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     { 
-        _gameMode = GameMode.PLAYING;
         _scene = new Scene();
-        _camera = new Camera();
+        _camera = new Camera(windowWidth, windowHeight);
 
         base.Initialize();
     }
@@ -41,9 +37,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _scene.LoadContent(GraphicsDevice);
-        _camera.LoadContent(GraphicsDevice);
 
-        TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
+        TargetElapsedTime = TimeSpan.FromSeconds(_scene.SecondsPerFrame);
     }
 
     protected override void Update(GameTime gameTime)
@@ -51,22 +46,8 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        if (_camera._player.Bound.Y > windowHeight ||_camera._player.Bound.Y < 0 ||_camera._player.Bound.X > windowWidth ||_camera._player.Bound.X < 0)
-        {
-            _scene.Start();
-            TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
-        }
-
-        if (_scene.gameMode == GameMode.PLAYING)
-        {
-            _scene.Stop();
-            TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
-            _camera._player.Update();
-        }
-        else if (_gameMode == GameMode.CUTSCENE)
-        {
-            _scene.Update();
-        }
+        _scene.Update(_camera, windowWidth, windowHeight);
+        TargetElapsedTime = TimeSpan.FromSeconds(_scene.SecondsPerFrame);
 
         base.Update(gameTime);
     }
@@ -75,15 +56,8 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
-        if (_scene.gameMode == GameMode.PLAYING)
-        {
-            _camera.Draw(_spriteBatch);
-        }
-        else if (_gameMode == GameMode.CUTSCENE)
-        {
-            _scene.Draw(_spriteBatch);
-        }
+        _spriteBatch.Begin(transformMatrix: _camera.GetTransform());
+        _scene.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
