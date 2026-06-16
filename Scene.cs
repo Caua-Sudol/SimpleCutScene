@@ -2,110 +2,128 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DontLikePoetry;
 
+public enum GameMode
+{
+   PLAYING = 0,
+   CUTSCENE = 1  
+}
 public class Scene
 {
-    // Scene vai ter o enum, controlar o inicio, fim e update da cena e a camera desenha tudo.
-    private Door _door;
-    private Player _player;
-    private Floor _floor;
-    private int x, y;
-    private int xFloor, yFloor;
-    private int _doorWidth, _doorHeight;
-    private int _playerWidth, _playerHeight;
-    private int _floorWidth, _floorHeight;
-    public bool _isScene { get; private set; }
-
+    public Player _playerScene;
+    private Camera _camera;
+    public GameMode gameMode { get; private set; }
+    public double FPS { get; private set; }
     public void LoadContent(GraphicsDevice graphicsDevice)
     {
-        _doorWidth = 8;
-        _doorHeight = 32;
-        _playerWidth = 16;
-        _playerHeight = 16;
-        _floorWidth = 120*5;
-        _floorHeight = 8;
+        _camera = new Camera();
+        _camera.LoadContent(graphicsDevice);
 
-        _door = new Door();
-        _player = new Player();
-        _floor = new Floor();
-        _player.LoadContent(graphicsDevice, _playerWidth, _playerHeight);
-        _door.LoadContent(graphicsDevice, _doorWidth, _doorHeight);
-        _floor.LoadContent(graphicsDevice, _floorWidth, _floorHeight);
+        var x = 700;
+        var y = 560;
+        var width = 16;
+        var height = 16;
 
-        x = 700;
-        y = 560;
-        xFloor = 700;
-        yFloor = 564;
+        _playerScene = new Player(x, y, width, height);
+        _playerScene.LoadContent(graphicsDevice, width, height);
 
-        _isScene = true;
+
+        gameMode = GameMode.PLAYING;
+        FPS = 1.0/60.0;
     }
 
     public Player PlayerScene
     {
         get
         {
-            return _player;
+            return _playerScene;
         }
         private set
         {
-            _player = value;
+            _playerScene = value;
         }
+    }
+    public void Start()
+    {
+        FPS = 1.0/5.0;
+        var x = 700;
+        var y = 560;
+        
+        _camera._player.Move(x, y);
+        gameMode = GameMode.CUTSCENE;
     }
 
     public void Update()
     {
-        _isScene = true;
         
-        if (_door.Bound.Width < 20)
+        
+        if (_camera._door.Bound.Width < 20)
         {
-            var tempPip = _player.Pip;
-            yFloor += 16;
-            y += 4;
-            _floor.Move(xFloor, yFloor);
+            var tempPlayerScene = _playerScene.Bound;
+            var tempDoor = _camera._door.Bound;
+            var tempFloor = _camera._floor.Bound;
 
-            var tempDoor = _door.Bound;
+            tempFloor.X += 16;
+            tempPlayerScene.Y += 4;
+            
+            _camera._floor.Move(_camera._floor.Bound.X, _camera._floor.Bound.Y);
 
             tempDoor.Width += 4;
             tempDoor.Height += 16;
-            _door.Bound = tempDoor;
+            
+            tempFloor.Width += 16;
+            tempFloor.Height += 4;
 
-            _floor.floor.Width += 16;
-            _floor.floor.Height += 4;
+            tempPlayerScene.Width += 8;
+            tempPlayerScene.Height += 8;
 
-            tempPip.Width += 8;
-            tempPip.Height += 8;
-            _player.Pip = tempPip;
+            _camera._door.Bound = tempDoor;
+            _camera._floor.Bound = tempFloor;
+            _playerScene.Bound = tempPlayerScene;
         }
-        else if(_door.Bound.Width >= 20)
+        else if(_camera._door.Bound.Width >= 20)
         {
-            x += 10;
-        }
-        _player.Move(x, y);   
+            var tempPlayerScene = _playerScene.Bound;
+            tempPlayerScene.X += 10;
 
-        if(x >= 950)
-        {
-            var tempPip = _player.Pip;
-            var tempDoor = _door.Bound;
-            x = 700;
-            y = 560;
-            xFloor = 700;
-            yFloor = 564;
-            _floor.Move(700, 564);
-            tempDoor.Width = 8;
-            tempDoor.Height = 32;
-            _floor.floor.Width = 120*5;
-            _floor.floor.Height = 8;
-            tempPip.Width = 16;
-            tempPip.Height = 16;
-            _door.Bound = tempDoor;
-            _player.Pip = tempPip;
-            _player.Move(700, 548);
-            _isScene = false;
+            _playerScene.Bound = tempPlayerScene;
         }
+        _playerScene.Move(_playerScene.Bound.X, _playerScene.Bound.Y);   
+
+        if(_playerScene.Bound.X >= 950)
+        {
+             gameMode = GameMode.PLAYING;
+        }
+    }
+
+    public void Stop()
+    {
+        var tempPlayerScene = _playerScene.Bound;
+        var tempDoor = _camera._door.Bound;
+        var tempFloor = _camera._floor.Bound;
+        
+        tempPlayerScene.X = 700;
+        tempPlayerScene.Y = 560;
+        tempFloor.X = 700;
+        tempFloor.Y = 564;
+        tempDoor.Width = 8;
+        tempDoor.Height = 32;
+        tempPlayerScene.Width = 16;
+        tempPlayerScene.Height = 16;
+
+        _camera._floor.Move(tempFloor.X, tempFloor.Y);
+        
+        tempFloor.Width = 120*5;
+        tempFloor.Height = 8;
+        
+        _camera._door.Bound = tempDoor;
+        _camera._floor.Bound = tempFloor;
+        _playerScene.Bound = tempPlayerScene;
+        _playerScene.Move(tempPlayerScene.X, 548);
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        _door.Draw(spriteBatch);
-        _floor.Draw(spriteBatch);
+        _camera.Draw(spriteBatch);
+        _playerScene.Draw(spriteBatch);
     }
 }

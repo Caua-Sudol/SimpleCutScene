@@ -16,27 +16,30 @@ public class Player
     // método para mover
     // método para desenhar
 
-    public Rectangle _pip;
+    private Rectangle _player;
     private Texture2D _texture;
     private Color[] _color;
 
-    public void LoadContent(GraphicsDevice graphicsDevice, int wallWidth, int wallHeight)
+    public Player(int x, int y, int width, int height)
     {
-        _pip = new Rectangle(0, 0, wallWidth, wallHeight);
-        _texture = new Texture2D(graphicsDevice, wallWidth, wallHeight);
-        _color = Enumerable.Repeat(Color.White, wallWidth*wallHeight).ToArray();
+        _player = new Rectangle(x, y, width, height);
+    }
+    public void LoadContent(GraphicsDevice graphicsDevice, int width, int height)
+    {
+        _texture = new Texture2D(graphicsDevice, width, height);
+        _color = Enumerable.Repeat(Color.White, width*height).ToArray();
         _texture.SetData(_color);
     }
 
-    public Rectangle Pip
+    public Rectangle Bound
     {
         set 
         {
-            _pip = value;
+            _player = value;
         }
         get
         {
-            return _pip;
+            return _player;
         }
     }
 
@@ -45,31 +48,31 @@ public class Player
         var state = Keyboard.GetState();
         if (state.IsKeyDown(Keys.W))
         {
-            _pip.Y -= 10;
+            _player.Y -= 10;
         }
         if (state.IsKeyDown(Keys.S) )
         {
-            _pip.Y += 10;
+            _player.Y += 10;
         }
         if (state.IsKeyDown(Keys.D))
         {
-            _pip.X += 10;
+            _player.X += 10;
         }
         if (state.IsKeyDown(Keys.A))
         {
-            _pip.X -= 10;
+            _player.X -= 10;
         }
     }
 
     public void Move(int x, int y)
     {
-        _pip.Y = y;
-        _pip.X = x;
+        _player.Y = y;
+        _player.X = x;
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
 
-        spriteBatch.Draw(_texture, _pip, Color.Purple);
+        spriteBatch.Draw(_texture, _player, Color.Purple);
     }
 }

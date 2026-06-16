@@ -7,12 +7,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace DontLikePoetry;
 
-public enum GameMode
-{
-   PLAYING = 0,
-   CUTSCENE = 1  
-}
-
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -20,7 +14,7 @@ public class Game1 : Game
     private int windowWidth = 1920;
     private int windowHeight = 1080;
     private GameMode _gameMode;
-    private double FPS = 1.0 / 60.0;
+    private Camera _camera;
     private Scene _scene;
 
     public Game1()
@@ -30,8 +24,6 @@ public class Game1 : Game
         _graphics.PreferredBackBufferHeight = windowHeight;
         _graphics.ApplyChanges();
 
-        TargetElapsedTime = TimeSpan.FromSeconds(FPS); // FPS
-
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
@@ -40,6 +32,7 @@ public class Game1 : Game
     { 
         _gameMode = GameMode.PLAYING;
         _scene = new Scene();
+        _camera = new Camera();
 
         base.Initialize();
     }
@@ -48,6 +41,9 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _scene.LoadContent(GraphicsDevice);
+        _camera.LoadContent(GraphicsDevice);
+
+        TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
     }
 
     protected override void Update(GameTime gameTime)
@@ -55,26 +51,21 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        if (_scene.PlayerScene.Pip.Y > windowHeight || _scene.PlayerScene.Pip.Y < 0 || _scene.PlayerScene.Pip.X > windowWidth || _scene.PlayerScene.Pip.X < 0)
+        if (_camera._player.Bound.Y > windowHeight ||_camera._player.Bound.Y < 0 ||_camera._player.Bound.X > windowWidth ||_camera._player.Bound.X < 0)
         {
-            FPS = 1.0 / 5.0;
-            TargetElapsedTime = TimeSpan.FromSeconds(FPS);
-            _gameMode = GameMode.CUTSCENE;
+            _scene.Start();
+            TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
         }
 
-        if (_gameMode == GameMode.PLAYING)
+        if (_scene.gameMode == GameMode.PLAYING)
         {
-            FPS = 1.0 / 60.0;
-            TargetElapsedTime = TimeSpan.FromSeconds(FPS);
-            _scene.PlayerScene.Update();
+            _scene.Stop();
+            TargetElapsedTime = TimeSpan.FromSeconds(_scene.FPS);
+            _camera._player.Update();
         }
         else if (_gameMode == GameMode.CUTSCENE)
         {
             _scene.Update();
-            if(_scene._isScene == false)
-            {
-                _gameMode = GameMode.PLAYING;
-            }
         }
 
         base.Update(gameTime);
@@ -85,8 +76,14 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin();
-        _scene.PlayerScene.Draw(_spriteBatch);
-        _scene.Draw(_spriteBatch);
+        if (_scene.gameMode == GameMode.PLAYING)
+        {
+            _camera.Draw(_spriteBatch);
+        }
+        else if (_gameMode == GameMode.CUTSCENE)
+        {
+            _scene.Draw(_spriteBatch);
+        }
         _spriteBatch.End();
 
         base.Draw(gameTime);
