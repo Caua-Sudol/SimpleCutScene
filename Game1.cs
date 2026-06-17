@@ -56,8 +56,8 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin(transformMatrix: _camera.GetTransform());
-        _scene.Draw(_spriteBatch);
+        _spriteBatch.Begin();
+        _scene.Draw(_spriteBatch, _camera);
         _spriteBatch.End();
 
         base.Draw(gameTime);

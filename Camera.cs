@@ -8,8 +8,8 @@ public class Camera
     {
         ScreenWidth = screenWidth;
         ScreenHeight = screenHeight;
-        X = 0;
-        Y = 0;
+        X = 700;
+        Y = 560;
         Zoom = 1;
     }
 
@@ -36,8 +36,18 @@ public class Camera
         Zoom = zoom;
     }
 
-    public Matrix? GetTransform()
+    public Rectangle GetTransform(Rectangle obj)
     {
-        return null;
+        // Funcionou mas preciso de uma transição suave.
+        Rectangle tempObj = obj;
+        
+        tempObj.X = (obj.X - X) * Zoom;
+        tempObj.Y = (obj.Y - Y) * Zoom;
+
+        tempObj.Width = obj.Width * Zoom;
+        tempObj.Height = obj.Height * Zoom;
+
+
+        return tempObj;
     }
 }

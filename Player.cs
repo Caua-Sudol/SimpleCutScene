@@ -70,9 +70,8 @@ public class Player
         _player.X = x;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, Rectangle ator)
     {
-
-        spriteBatch.Draw(_texture, _player, Color.Purple);
+        spriteBatch.Draw(_texture, ator, Color.Purple);
     }
 }

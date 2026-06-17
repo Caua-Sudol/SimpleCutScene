@@ -44,8 +44,8 @@ public class Floor
         _floor.X = x;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, Rectangle ator)
     {
-        spriteBatch.Draw(texture, _floor, Color.Green);
+        spriteBatch.Draw(texture, ator, Color.Green);
     }
 }

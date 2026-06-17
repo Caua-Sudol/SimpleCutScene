@@ -40,9 +40,8 @@ public class Door
         _texture.SetData(_color);
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, Rectangle ator)
     {
-
-        spriteBatch.Draw(_texture, _door, Color.Blue);
+        spriteBatch.Draw(_texture, ator, Color.Blue);
     }
 }

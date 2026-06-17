@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DontLikePoetry;
@@ -22,7 +23,7 @@ public class Scene
 
     private const int FloorX = 700;
     private const int FloorY = 564;
-    private const int FloorWidth = 120 * 5;
+    private const int FloorWidth = 600;
     private const int FloorHeight = 8;
 
     private Player _player;
@@ -63,6 +64,9 @@ public class Scene
 
             if (PlayerTouchedEdge(screenWidth, screenHeight))
             {
+                camera.SetZoom(2);
+                // Preciso achar um calculo para que a camera sempre fique no centro do player
+                camera.MoveTo(600, 400);
                 StartCutscene();
             }
         }
@@ -86,16 +90,30 @@ public class Scene
     {
         GameMode = GameMode.CUTSCENE;
         SecondsPerFrame = 1.0 / 5.0;
+        _player.Move(PlayerStartX, PlayerStartY);
     }
 
     private void UpdateCutscene(Camera camera)
     {
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, Camera camera)
     {
-        _floor.Draw(spriteBatch);
-        _door.Draw(spriteBatch);
-        _player.Draw(spriteBatch);
+        if ( GameMode == GameMode.PLAYING)
+        {
+            _player.Draw(spriteBatch, _player.Bound);
+            _door.Draw(spriteBatch, _door.Bound);
+            _floor.Draw(spriteBatch, _floor.Bound);
+        }
+        else if (GameMode == GameMode.CUTSCENE)
+        {
+            var atorPlayer = camera.GetTransform(_player.Bound);
+            var atorDoor = camera.GetTransform(_door.Bound);
+            var atorFloor = camera.GetTransform(_floor.Bound);
+
+            _player.Draw(spriteBatch, atorPlayer);
+            _door.Draw(spriteBatch, atorDoor);
+            _floor.Draw(spriteBatch, atorFloor);
+        }
     }
 }
