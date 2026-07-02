@@ -107,13 +107,13 @@ public class Scene
         }
         else if (GameMode == GameMode.CUTSCENE)
         {
-            var atorPlayer = camera.GetTransform(_player.Bound);
-            var atorDoor = camera.GetTransform(_door.Bound);
-            var atorFloor = camera.GetTransform(_floor.Bound);
+            var actorPlayer = camera.GetTransform(_player.Bound);
+            var actorDoor = camera.GetTransform(_door.Bound);
+            var actorFloor = camera.GetTransform(_floor.Bound);
 
-            _player.Draw(spriteBatch, atorPlayer);
-            _door.Draw(spriteBatch, atorDoor);
-            _floor.Draw(spriteBatch, atorFloor);
+            _player.Draw(spriteBatch, actorPlayer);
+            _door.Draw(spriteBatch, actorDoor);
+            _floor.Draw(spriteBatch, actorFloor);
         }
     }
 }
