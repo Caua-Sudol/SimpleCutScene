@@ -64,9 +64,8 @@ public class Scene
 
             if (PlayerTouchedEdge(screenWidth, screenHeight))
             {
-                camera.SetZoom(2);
-                // Preciso achar um calculo para que a camera sempre fique no centro do player
-                camera.MoveTo(600, 400);
+                camera.Zoom = 2.0f;
+                camera.GetTransform();
                 StartCutscene();
             }
         }
@@ -95,25 +94,28 @@ public class Scene
 
     private void UpdateCutscene(Camera camera)
     {
+        //jogador se move até bater na parede
+        // depois temos que chamar o fim e resetar as variaveis
+    }
+
+    private void FinishCutscene()
+    {
+        GameMode = GameMode.PLAYING;
+        SecondsPerFrame = 1.0 / 60.0;
     }
 
     public void Draw(SpriteBatch spriteBatch, Camera camera)
     {
-        if ( GameMode == GameMode.PLAYING)
-        {
-            _player.Draw(spriteBatch, _player.Bound);
-            _door.Draw(spriteBatch, _door.Bound);
-            _floor.Draw(spriteBatch, _floor.Bound);
-        }
-        else if (GameMode == GameMode.CUTSCENE)
-        {
-            var actorPlayer = camera.GetTransform(_player.Bound);
-            var actorDoor = camera.GetTransform(_door.Bound);
-            var actorFloor = camera.GetTransform(_floor.Bound);
 
-            _player.Draw(spriteBatch, actorPlayer);
-            _door.Draw(spriteBatch, actorDoor);
-            _floor.Draw(spriteBatch, actorFloor);
-        }
+        var cameraTransform = camera.GetTransform();
+
+        spriteBatch.Begin(transformMatrix: cameraTransform);
+
+        _player.Draw(spriteBatch, _player.Bound);
+        _door.Draw(spriteBatch, _door.Bound);
+        _floor.Draw(spriteBatch, _floor.Bound);
+
+        spriteBatch.End();
+    
     }
 }

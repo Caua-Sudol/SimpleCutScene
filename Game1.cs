@@ -14,6 +14,9 @@ public class Game1 : Game
     private Camera _camera;
     private Scene _scene;
 
+    private Vector2 positionCamera;
+    private Vector2 dimentionsCamera;
+
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -28,7 +31,11 @@ public class Game1 : Game
     protected override void Initialize()
     { 
         _scene = new Scene();
-        _camera = new Camera(windowWidth, windowHeight);
+
+        positionCamera = new Vector2((float)windowWidth/2, (float)windowHeight/2);
+        dimentionsCamera = new Vector2((float)windowWidth/2, (float)windowHeight/2);
+
+        _camera = new Camera(positionCamera, dimentionsCamera, 1.0f);
 
         base.Initialize();
     }
@@ -56,9 +63,7 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
         _scene.Draw(_spriteBatch, _camera);
-        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

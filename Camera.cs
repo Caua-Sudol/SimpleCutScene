@@ -4,50 +4,26 @@ namespace DontLikePoetry;
 
 public class Camera
 {
-    public Camera(int screenWidth, int screenHeight)
+   public float Zoom {get; set;}
+   public Vector2 Position {get; set;}
+   public Vector2 Dimensions {get; set;}
+
+   public Camera(Vector2 position, Vector2 dimensions, float zoom)
     {
-        ScreenWidth = screenWidth;
-        ScreenHeight = screenHeight;
-        X = 700;
-        Y = 560;
-        Zoom = 1;
+        this.Position = position;
+        this.Dimensions = dimensions;
+        this.Zoom = zoom;
     }
 
-    public int ScreenWidth { get; private set; }
-    public int ScreenHeight { get; private set; }
-    public int X { get; private set; }
-    public int Y { get; private set; }
-    public int Zoom { get; private set; }
-
-    public void Move(int x, int y)
+    public Matrix GetTransform()
     {
-        X += x;
-        Y += y;
+        Matrix translation = Matrix.CreateTranslation(-Position.X, -Position.Y, 0f);
+
+        Matrix zoom = Matrix.CreateScale(Zoom, Zoom, 1f);
+
+        Matrix center = Matrix.CreateTranslation(Dimensions.X / 2f, Dimensions.Y / 2f, 0f);
+
+        return translation * zoom * center;
     }
 
-    public void MoveTo(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-
-    public void SetZoom(int zoom)
-    {
-        Zoom = zoom;
-    }
-
-    public Rectangle GetTransform(Rectangle obj)
-    {
-        // Funcionou mas preciso de uma transição suave.
-        Rectangle tempObj = obj;
-        
-        tempObj.X = (obj.X - X) * Zoom;
-        tempObj.Y = (obj.Y - Y) * Zoom;
-
-        tempObj.Width = obj.Width * Zoom;
-        tempObj.Height = obj.Height * Zoom;
-
-
-        return tempObj;
-    }
 }
