@@ -70,6 +70,12 @@ public class Player
         _player.X = x;
     }
 
+    public void Walk(int x, int y)
+    {
+        _player.Y += y;
+        _player.X += x;
+    }
+
     public void Draw(SpriteBatch spriteBatch, Rectangle actor)
     {
         spriteBatch.Draw(_texture, actor, Color.Purple);

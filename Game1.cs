@@ -33,7 +33,7 @@ public class Game1 : Game
         _scene = new Scene();
 
         positionCamera = new Vector2((float)windowWidth/2, (float)windowHeight/2);
-        dimentionsCamera = new Vector2((float)windowWidth/2, (float)windowHeight/2);
+        dimentionsCamera = new Vector2((float)windowWidth, (float)windowHeight);
 
         _camera = new Camera(positionCamera, dimentionsCamera, 1.0f);
 

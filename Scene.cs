@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DontLikePoetry;
@@ -12,7 +11,7 @@ public enum GameMode
 public class Scene
 {
     private const int PlayerStartX = 700;
-    private const int PlayerStartY = 560;
+    private const int PlayerStartY = 552;
     private const int PlayerWidth = 16;
     private const int PlayerHeight = 16;
 
@@ -62,7 +61,7 @@ public class Scene
         {
             _player.Update();
 
-            if (PlayerTouchedEdge(screenWidth, screenHeight))
+            if (PlayerTouchedEdge())
             {
                 camera.Zoom = 2.0f;
                 camera.GetTransform();
@@ -75,14 +74,9 @@ public class Scene
         }
     }
 
-    private bool PlayerTouchedEdge(int screenWidth, int screenHeight)
+    private bool PlayerTouchedEdge()
     {
-        var bound = _player.Bound;
-
-        return bound.Left <= 0
-            || bound.Right >= screenWidth
-            || bound.Top <= 0
-            || bound.Bottom >= screenHeight;
+        return _player.Bound.Intersects(_door.Bound);
     }
 
     private void StartCutscene()
@@ -94,14 +88,22 @@ public class Scene
 
     private void UpdateCutscene(Camera camera)
     {
-        //jogador se move até bater na parede
-        // depois temos que chamar o fim e resetar as variaveis
+        if(_player.Bound.X <= 940)
+        {
+            _player.Walk(10, 0);
+        }
+        else
+        {
+            FinishCutscene(camera);
+        }
     }
 
-    private void FinishCutscene()
+    private void FinishCutscene(Camera camera)
     {
         GameMode = GameMode.PLAYING;
         SecondsPerFrame = 1.0 / 60.0;
+        camera.Zoom = 1.0f;
+        _player.Move(PlayerStartX, PlayerStartY);
     }
 
     public void Draw(SpriteBatch spriteBatch, Camera camera)
