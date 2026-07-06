@@ -15,6 +15,11 @@ public class Camera
         this.Zoom = zoom;
     }
 
+    public void Update(Player player)
+    {
+        Position = new Vector2(player.Bound.Center.X, player.Bound.Center.Y);
+    }
+
     public Matrix GetTransform()
     {
         Matrix translation = Matrix.CreateTranslation(-Position.X, -Position.Y, 0f);

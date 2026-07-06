@@ -55,16 +55,16 @@ public class Scene
         SecondsPerFrame = 1.0 / 60.0;
     }
 
-    public void Update(Camera camera, int screenWidth, int screenHeight)
+    public void Update(Camera camera)
     {
         if (GameMode == GameMode.PLAYING)
         {
             _player.Update();
 
-            if (PlayerTouchedEdge())
+            if (PlayerTouchedDoor())
             {
                 camera.Zoom = 2.0f;
-                camera.GetTransform();
+                // camera.GetTransform();
                 StartCutscene();
             }
         }
@@ -74,7 +74,7 @@ public class Scene
         }
     }
 
-    private bool PlayerTouchedEdge()
+    private bool PlayerTouchedDoor()
     {
         return _player.Bound.Intersects(_door.Bound);
     }
@@ -88,6 +88,7 @@ public class Scene
 
     private void UpdateCutscene(Camera camera)
     {
+        camera.Update(_player);
         if(_player.Bound.X <= 940)
         {
             _player.Walk(10, 0);
