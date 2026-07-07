@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DontLikePoetry;
@@ -5,7 +7,10 @@ namespace DontLikePoetry;
 public enum GameMode
 {
    PLAYING = 0,
-   CUTSCENE = 1
+   CUTSCENE = 1,
+
+   FADE_OUT = 2,
+   FADE_IN = 3
 }
 
 public class Scene
@@ -25,6 +30,11 @@ public class Scene
     private const int FloorWidth = 600;
     private const int FloorHeight = 8;
 
+    private Color []fadeColor;
+    private Rectangle fadeRec;
+    private Texture2D fadeTexture;
+    private float fade_alph;
+
     private Player _player;
     private Door _door;
     private Floor _floor;
@@ -42,6 +52,13 @@ public class Scene
 
     public void LoadContent(GraphicsDevice graphicsDevice)
     {
+        fade_alph = 0.0f;
+
+        fadeColor = Enumerable.Repeat(Color.White, 1920*1080).ToArray();
+        fadeRec = new Rectangle(0, 0, 1920, 1080);
+        fadeTexture = new Texture2D(graphicsDevice, 1920, 1080);
+        fadeTexture.SetData(fadeColor);        
+
         _player = new Player(PlayerStartX, PlayerStartY, PlayerWidth, PlayerHeight);
         _player.LoadContent(graphicsDevice, PlayerWidth, PlayerHeight);
 
@@ -63,9 +80,30 @@ public class Scene
 
             if (PlayerTouchedDoor())
             {
-                camera.Zoom = 2.0f;
-                // camera.GetTransform();
-                StartCutscene();
+                FadeOut();
+                // Antes do start precisa do fade_out
+                if(GameMode == GameMode.FADE_OUT)
+                {
+                    fade_alph += 0.2f;
+                }
+                if(fade_alph >= 1.0f)
+                {
+                    // Reposiciona o jogador
+                    _player.Move(PlayerStartX, PlayerStartY);
+                    // fade_in
+                    FadeIN();
+                }
+                if(GameMode == GameMode.FADE_IN)
+                {
+                    fade_alph -= 0.2f;
+                    // Dai vem o start
+                    if(fade_alph <= 0.0f)
+                    {
+                        camera.Zoom = 2.0f;
+                        StartCutscene();
+                    }
+                }
+                    
             }
         }
         else if (GameMode == GameMode.CUTSCENE)
@@ -79,11 +117,19 @@ public class Scene
         return _player.Bound.Intersects(_door.Bound);
     }
 
+    private void FadeOut()
+    {
+        GameMode = GameMode.FADE_OUT;
+    }
+    private void FadeIN()
+    {
+        GameMode = GameMode.FADE_IN;
+    }
+
     private void StartCutscene()
     {
         GameMode = GameMode.CUTSCENE;
         SecondsPerFrame = 1.0 / 5.0;
-        _player.Move(PlayerStartX, PlayerStartY);
     }
 
     private void UpdateCutscene(Camera camera)
@@ -109,16 +155,18 @@ public class Scene
 
     public void Draw(SpriteBatch spriteBatch, Camera camera)
     {
+            var cameraTransform = camera.GetTransform();
+            spriteBatch.Begin(transformMatrix: cameraTransform);
 
-        var cameraTransform = camera.GetTransform();
-
-        spriteBatch.Begin(transformMatrix: cameraTransform);
-
-        _player.Draw(spriteBatch, _player.Bound);
-        _door.Draw(spriteBatch, _door.Bound);
-        _floor.Draw(spriteBatch, _floor.Bound);
-
-        spriteBatch.End();
-    
+            _player.Draw(spriteBatch, _player.Bound);
+            _door.Draw(spriteBatch, _door.Bound);
+            _floor.Draw(spriteBatch, _floor.Bound);
+            if(GameMode == GameMode.FADE_OUT)
+            {
+                //Escureceu um pouco, provavelmente o ciclo está errado
+                // Ele deve ter escurecido 0.2 uma vez e travado em alguma etapa.
+                spriteBatch.Draw(fadeTexture, fadeRec, new Color(Color.Black, fade_alph));
+            }
+            spriteBatch.End();
     }
 }
