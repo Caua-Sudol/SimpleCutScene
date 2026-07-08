@@ -74,16 +74,17 @@ public class Scene
 
     public void Update(Camera camera)
     {
+        // O ciclo atual ele não entra em playing
         if (GameMode == GameMode.PLAYING)
         {
             _player.Update();
 
             if (PlayerTouchedDoor())
             {
-                FadeOut();
                 // Antes do start precisa do fade_out
-                if(GameMode == GameMode.FADE_OUT)
+                if(fade_alph < 1.0f)
                 {
+                    FadeOut();
                     fade_alph += 0.2f;
                 }
                 if(fade_alph >= 1.0f)
@@ -92,18 +93,17 @@ public class Scene
                     _player.Move(PlayerStartX, PlayerStartY);
                     // fade_in
                     FadeIN();
-                }
-                if(GameMode == GameMode.FADE_IN)
-                {
-                    fade_alph -= 0.2f;
-                    // Dai vem o start
-                    if(fade_alph <= 0.0f)
+                    if(GameMode == GameMode.FADE_IN)
                     {
-                        camera.Zoom = 2.0f;
-                        StartCutscene();
+                        fade_alph -= 0.2f;
+                        // Dai vem o start
+                        if(fade_alph <= 0.0f)
+                        {
+                            camera.Zoom = 2.0f;
+                            StartCutscene();
+                        }
                     }
                 }
-                    
             }
         }
         else if (GameMode == GameMode.CUTSCENE)
@@ -165,6 +165,7 @@ public class Scene
             {
                 //Escureceu um pouco, provavelmente o ciclo está errado
                 // Ele deve ter escurecido 0.2 uma vez e travado em alguma etapa.
+                // O ciclo atual ele não entra em playing
                 spriteBatch.Draw(fadeTexture, fadeRec, new Color(Color.Black, fade_alph));
             }
             spriteBatch.End();
