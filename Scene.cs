@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace DontLikePoetry;
 
@@ -34,6 +35,8 @@ public class Scene
     private Rectangle fadeRec;
     private Texture2D fadeTexture;
     private float fade_alph;
+    private float fadeOut;
+    private float fadeIn;
 
     private Player _player;
     private Door _door;
@@ -53,6 +56,8 @@ public class Scene
     public void LoadContent(GraphicsDevice graphicsDevice)
     {
         fade_alph = 0.0f;
+        fadeOut = 0.0f;
+        fadeIn = 0.0f;
 
         fadeColor = Enumerable.Repeat(Color.White, 1920*1080).ToArray();
         fadeRec = new Rectangle(0, 0, 1920, 1080);
@@ -81,34 +86,15 @@ public class Scene
 
             if (PlayerTouchedDoor())
             {
-                // Antes do start precisa do fade_out
-                if(fade_alph < 1.0f)
-                {
-                    FadeOut();
-                    fade_alph += 0.2f;
-                }
-                if(fade_alph >= 1.0f)
-                {
-                    // Reposiciona o jogador
-                    _player.Move(PlayerStartX, PlayerStartY);
-                    // fade_in
-                    FadeIN();
-                    if(GameMode == GameMode.FADE_IN)
-                    {
-                        fade_alph -= 0.2f;
-                        // Dai vem o start
-                        if(fade_alph <= 0.0f)
-                        {
-                            camera.Zoom = 2.0f;
-                            StartCutscene();
-                        }
-                    }
-                }
+                SecondsPerFrame = 1.0 / 5.0;
+                GameMode = GameMode.CUTSCENE;
+                StartCutscene(camera);
+
             }
         }
-        else if (GameMode == GameMode.CUTSCENE)
+        else
         {
-            UpdateCutscene(camera);
+            StartCutscene(camera);
         }
     }
 
@@ -117,19 +103,32 @@ public class Scene
         return _player.Bound.Intersects(_door.Bound);
     }
 
-    private void FadeOut()
+    private void StartCutscene(Camera camera)
     {
-        GameMode = GameMode.FADE_OUT;
-    }
-    private void FadeIN()
-    {
-        GameMode = GameMode.FADE_IN;
-    }
-
-    private void StartCutscene()
-    {
-        GameMode = GameMode.CUTSCENE;
-        SecondsPerFrame = 1.0 / 5.0;
+        // Antes do start precisa do fade_out
+        if(fadeOut < 1.0f)
+        {
+            fade_alph += 0.2f;
+            fadeIn += 0.2f;
+            fadeOut += 0.2f;
+        }
+        if(fadeIn >= 1.0f)
+        {
+            // Reposiciona o jogador
+            if(_player.Bound.X != PlayerStartX)
+            {
+                _player.Move(PlayerStartX, PlayerStartY);
+            }
+            // fade_in
+            fade_alph -= 0.2f;
+            // Dai vem o start
+            if(fade_alph <= 0.0f)
+            {
+                camera.Zoom = 2.0f;
+                //Rodou uma vez mas depois travou aqui agora.
+                UpdateCutscene(camera);
+            }
+        }
     }
 
     private void UpdateCutscene(Camera camera)
@@ -150,6 +149,9 @@ public class Scene
         GameMode = GameMode.PLAYING;
         SecondsPerFrame = 1.0 / 60.0;
         camera.Zoom = 1.0f;
+        fade_alph += 0.2f;
+        fadeIn += 0.2f;
+        fadeOut += 0.2f;
         _player.Move(PlayerStartX, PlayerStartY);
     }
 
@@ -161,7 +163,7 @@ public class Scene
             _player.Draw(spriteBatch, _player.Bound);
             _door.Draw(spriteBatch, _door.Bound);
             _floor.Draw(spriteBatch, _floor.Bound);
-            if(GameMode == GameMode.FADE_OUT)
+            if(GameMode == GameMode.CUTSCENE)
             {
                 //Escureceu um pouco, provavelmente o ciclo está errado
                 // Ele deve ter escurecido 0.2 uma vez e travado em alguma etapa.
