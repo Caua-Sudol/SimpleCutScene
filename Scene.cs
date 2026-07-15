@@ -79,7 +79,8 @@ public class Scene
 
     public void Update(Camera camera)
     {
-        // O ciclo atual ele não entra em playing
+        // É melhor fazer a máquina de estado com switch e usar os enums
+        // Dai só precisamos do fade_alph e separamos tudo para testar
         if (GameMode == GameMode.PLAYING)
         {
             _player.Update();
@@ -163,11 +164,8 @@ public class Scene
             _player.Draw(spriteBatch, _player.Bound);
             _door.Draw(spriteBatch, _door.Bound);
             _floor.Draw(spriteBatch, _floor.Bound);
-            if(GameMode == GameMode.CUTSCENE)
+            if (GameMode == GameMode.FADE_OUT || GameMode == GameMode.FADE_IN || GameMode == GameMode.CUTSCENE)
             {
-                //Escureceu um pouco, provavelmente o ciclo está errado
-                // Ele deve ter escurecido 0.2 uma vez e travado em alguma etapa.
-                // O ciclo atual ele não entra em playing
                 spriteBatch.Draw(fadeTexture, fadeRec, new Color(Color.Black, fade_alph));
             }
             spriteBatch.End();
