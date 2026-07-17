@@ -34,9 +34,7 @@ public class Scene
     private Color []fadeColor;
     private Rectangle fadeRec;
     private Texture2D fadeTexture;
-    private float fade_alph;
-    private float fadeOut;
-    private float fadeIn;
+    private float _fadeAlph;
 
     private Player _player;
     private Door _door;
@@ -55,9 +53,7 @@ public class Scene
 
     public void LoadContent(GraphicsDevice graphicsDevice)
     {
-        fade_alph = 0.0f;
-        fadeOut = 0.0f;
-        fadeIn = 0.0f;
+        _fadeAlph = 0.0f;
 
         fadeColor = Enumerable.Repeat(Color.White, 1920*1080).ToArray();
         fadeRec = new Rectangle(0, 0, 1920, 1080);
@@ -88,14 +84,36 @@ public class Scene
             if (PlayerTouchedDoor())
             {
                 SecondsPerFrame = 1.0 / 5.0;
-                GameMode = GameMode.CUTSCENE;
-                StartCutscene(camera);
-
+                GameMode = GameMode.FADE_OUT;
             }
         }
-        else
+        else if (GameMode == GameMode.CUTSCENE)
         {
             StartCutscene(camera);
+        }
+        else if (GameMode == GameMode.FADE_OUT)
+        {
+            // Antes do start precisa do fade_out
+            if(_fadeAlph < 1.0f)
+            {
+                _fadeAlph += 0.2f;
+            }
+            if(_fadeAlph >= 1.0f)
+            {
+
+                _player.Move(PlayerStartX, PlayerStartY);
+                GameMode = GameMode.FADE_IN;
+            }
+            
+        }
+        else if (GameMode == GameMode.FADE_IN)
+        {
+            _fadeAlph -= 0.2f;
+
+            if(_fadeAlph <= 0.0f)
+            {
+                GameMode = GameMode.CUTSCENE;
+            }
         }
     }
 
@@ -106,30 +124,8 @@ public class Scene
 
     private void StartCutscene(Camera camera)
     {
-        // Antes do start precisa do fade_out
-        if(fadeOut < 1.0f)
-        {
-            fade_alph += 0.2f;
-            fadeIn += 0.2f;
-            fadeOut += 0.2f;
-        }
-        if(fadeIn >= 1.0f)
-        {
-            // Reposiciona o jogador
-            if(_player.Bound.X != PlayerStartX)
-            {
-                _player.Move(PlayerStartX, PlayerStartY);
-            }
-            // fade_in
-            fade_alph -= 0.2f;
-            // Dai vem o start
-            if(fade_alph <= 0.0f)
-            {
-                camera.Zoom = 2.0f;
-                //Rodou uma vez mas depois travou aqui agora.
-                UpdateCutscene(camera);
-            }
-        }
+        camera.Zoom = 2.0f;
+        UpdateCutscene(camera);
     }
 
     private void UpdateCutscene(Camera camera)
@@ -150,9 +146,7 @@ public class Scene
         GameMode = GameMode.PLAYING;
         SecondsPerFrame = 1.0 / 60.0;
         camera.Zoom = 1.0f;
-        fade_alph += 0.2f;
-        fadeIn += 0.2f;
-        fadeOut += 0.2f;
+        _fadeAlph = 0.0f;
         _player.Move(PlayerStartX, PlayerStartY);
     }
 
@@ -166,7 +160,7 @@ public class Scene
             _floor.Draw(spriteBatch, _floor.Bound);
             if (GameMode == GameMode.FADE_OUT || GameMode == GameMode.FADE_IN || GameMode == GameMode.CUTSCENE)
             {
-                spriteBatch.Draw(fadeTexture, fadeRec, new Color(Color.Black, fade_alph));
+                spriteBatch.Draw(fadeTexture, fadeRec, new Color(Color.Black, _fadeAlph));
             }
             spriteBatch.End();
     }
