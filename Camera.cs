@@ -17,7 +17,7 @@ public class Camera
 
     public void Update(Player player)
     {
-        Position = new Vector2(player.Bound.Center.X, player.Bound.Center.Y);
+        Position = new Vector2(player.Bound.X, player.Bound.Y);
     }
 
     public Matrix GetTransform()

@@ -9,20 +9,17 @@ namespace DontLikePoetry;
 
 public class Player
 {
-    // posição
-    // tamanho
-    // velocidade
-    // retângulo de colisão
-    // método para mover
-    // método para desenhar
-
-    private Rectangle _player;
+    private Vector2 _player;
+    private int _widthPlayer;
+    private int _heightPlayer;
     private Texture2D _texture;
     private Color[] _color;
 
     public Player(int x, int y, int width, int height)
     {
-        _player = new Rectangle(x, y, width, height);
+        _player = new Vector2(x, y);
+        _widthPlayer = width;
+        _heightPlayer = height;
     }
     public void LoadContent(GraphicsDevice graphicsDevice, int width, int height)
     {
@@ -31,7 +28,7 @@ public class Player
         _texture.SetData(_color);
     }
 
-    public Rectangle Bound
+    public Vector2 Bound
     {
         set 
         {
@@ -76,7 +73,7 @@ public class Player
         _player.X += x;
     }
 
-    public void Draw(SpriteBatch spriteBatch, Rectangle actor)
+    public void Draw(SpriteBatch spriteBatch, Vector2 actor)
     {
         spriteBatch.Draw(_texture, actor, Color.Purple);
     }

@@ -75,8 +75,6 @@ public class Scene
 
     public void Update(Camera camera)
     {
-        // É melhor fazer a máquina de estado com switch e usar os enums
-        // Dai só precisamos do fade_alph e separamos tudo para testar
         if (GameMode == GameMode.PLAYING)
         {
             _player.Update();
@@ -93,7 +91,6 @@ public class Scene
         }
         else if (GameMode == GameMode.FADE_OUT)
         {
-            // Antes do start precisa do fade_out
             if(_fadeAlph < 1.0f)
             {
                 _fadeAlph += 0.2f;
@@ -119,7 +116,8 @@ public class Scene
 
     private bool PlayerTouchedDoor()
     {
-        return _player.Bound.Intersects(_door.Bound);
+        // return _player.Bound.Intersects(_door.Bound);
+        return false;
     }
 
     private void StartCutscene(Camera camera)
