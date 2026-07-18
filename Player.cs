@@ -15,6 +15,7 @@ public class Player
 
     public Vector2 _velocity { get; private set;}
     public float _gravity { get; private set;}
+    public bool _isGrounded {get; private set;} = false;
     private Texture2D _texture;
     private Color[] _color;
 
@@ -55,25 +56,36 @@ public class Player
 
     public void Update()
     {
-        _player.Y -= _gravity;
+        var velX = 0f; 
+        var velY = _velocity.Y; 
 
         var state = Keyboard.GetState();
-        if (state.IsKeyDown(Keys.W))
+        // if (state.IsKeyDown(Keys.W))
+        // {
+        //     _player.Y -= _velocity.Y;
+        // }
+        // if (state.IsKeyDown(Keys.S) )
+        // {
+        //     _player.Y += _velocity.Y;
+        // }
+        if (state.IsKeyDown(Keys.Space) && _isGrounded)
         {
-            _player.Y -= _velocity.Y;
-        }
-        if (state.IsKeyDown(Keys.S) )
-        {
-            _player.Y += _velocity.Y;
+            velY = -12f;
+            _isGrounded = false;
         }
         if (state.IsKeyDown(Keys.D))
         {
-            _player.X += _velocity.X;
+            velX = 10f;
         }
         if (state.IsKeyDown(Keys.A))
         {
-            _player.X -= _velocity.X;
+            velX = -10f;
         }
+        
+        velY -= _gravity; 
+        _velocity = new Vector2(velX, velY);
+        _player.X += _velocity.X;
+        _player.Y += _velocity.Y;
     }
 
     public void Move(int x, int y)
@@ -91,6 +103,11 @@ public class Player
     public void StopFalling(float velocityX)
     {
         _velocity = new Vector2(velocityX, 0);
+    }
+
+    public void Grounded()
+    {
+        _isGrounded = true;
     }
 
     public void Draw(SpriteBatch spriteBatch, Vector2 actor)

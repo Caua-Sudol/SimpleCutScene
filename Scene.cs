@@ -21,7 +21,7 @@ public class Scene
     private const int PlayerWidth = 16;
     private const int PlayerHeight = 16;
     private Vector2 PlayerVelocity = new Vector2(10.0f, 10.0f); // Não vai ser const, velocidade vai ficar variando
-    private const float PlayerGravity = -9.81f; //-9.81f
+    private const float PlayerGravity = -0.5f; //-9.81f
 
     private const int DoorX = 960;
     private const int DoorY = 540;
@@ -116,7 +116,9 @@ public class Scene
         }
         if(PlayerTouchedObj(_floor.Bound))
         {
+
             var tempPlayer = _player.Position;
+            _player.Grounded();
             _player.StopFalling(PlayerVelocity.X);
             tempPlayer.Y = _floor.Bound.Y - _player.HitBox.Height;
             _player.Position = tempPlayer;
