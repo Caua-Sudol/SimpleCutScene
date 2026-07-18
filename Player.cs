@@ -81,8 +81,10 @@ public class Player
         {
             velX = -10f;
         }
-        
-        velY -= _gravity; 
+        if(_isGrounded == false)
+        {
+            velY -= _gravity;   
+        } 
         _velocity = new Vector2(velX, velY);
         _player.X += _velocity.X;
         _player.Y += _velocity.Y;
