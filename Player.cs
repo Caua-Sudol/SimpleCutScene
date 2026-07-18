@@ -7,6 +7,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace DontLikePoetry;
 
+public enum Direction{
+    Top = 1,
+    Down = 2,
+    Rigth = 3,
+    Left = 4
+}
+
 public class Player
 {
     private Vector2 _player;
@@ -16,6 +23,9 @@ public class Player
     public Vector2 _velocity { get; private set;}
     public float _gravity { get; private set;}
     public bool _isGrounded {get; private set;} = false;
+    public Direction _direction {get; private set;} = Direction.Rigth;
+    public bool isBreath {get; private set;} = true;
+    private float _dashTimer = 0;
     private Texture2D _texture;
     private Color[] _color;
 
@@ -57,37 +67,61 @@ public class Player
     public void Update()
     {
         var velX = 0f; 
-        var velY = _velocity.Y; 
-
+        var velY = _velocity.Y;
         var state = Keyboard.GetState();
-        // if (state.IsKeyDown(Keys.W))
-        // {
-        //     _player.Y -= _velocity.Y;
-        // }
-        // if (state.IsKeyDown(Keys.S) )
-        // {
-        //     _player.Y += _velocity.Y;
-        // }
-        if (state.IsKeyDown(Keys.Space) && _isGrounded)
+
+        if(_dashTimer > 0)
         {
-            velY = -12f;
-            _isGrounded = false;
+            if(_direction == Direction.Rigth)
+            {
+                velX = _dashTimer;
+                _dashTimer -= 1f;
+            }
+            if(_direction == Direction.Left)
+            {
+                velX = -_dashTimer;
+                _dashTimer -= 1f;
+            }
+            isBreath = false;
         }
-        if (state.IsKeyDown(Keys.D))
-        {
-            velX = 10f;
+        else
+        { 
+            // if (state.IsKeyDown(Keys.W))
+            // {
+            //     _direction = Direction.Top;
+            // }
+            // if (state.IsKeyDown(Keys.S))
+            // {
+            //     _direction = Direction.Down;
+            // }
+            if (state.IsKeyDown(Keys.Space) && _isGrounded)
+            {
+                velY = -15f;
+                _isGrounded = false;
+            }
+            if (state.IsKeyDown(Keys.LeftShift) && isBreath)
+            {
+                _dashTimer = 15f;
+                isBreath = false;
+            }
+            if (state.IsKeyDown(Keys.D))
+            {
+                velX = 10f;
+                _direction = Direction.Rigth;
+            }
+            if (state.IsKeyDown(Keys.A))
+            {
+                velX = -10f;
+                _direction = Direction.Left;
+            }
+            if(_isGrounded == false)
+            {
+                velY -= _gravity;   
+            }
         }
-        if (state.IsKeyDown(Keys.A))
-        {
-            velX = -10f;
-        }
-        if(_isGrounded == false)
-        {
-            velY -= _gravity;   
-        } 
         _velocity = new Vector2(velX, velY);
         _player.X += _velocity.X;
-        _player.Y += _velocity.Y;
+        _player.Y += _velocity.Y;  
     }
 
     public void Move(int x, int y)
@@ -110,6 +144,14 @@ public class Player
     public void Grounded()
     {
         _isGrounded = true;
+    }
+    public void NotGrounded()
+    {
+        _isGrounded = false;
+    }
+    public void MoreBreath()
+    {
+        isBreath = true;
     }
 
     public void Draw(SpriteBatch spriteBatch, Vector2 actor)

@@ -119,9 +119,14 @@ public class Scene
 
             var tempPlayer = _player.Position;
             _player.Grounded();
+            _player.MoreBreath();
             _player.StopFalling(PlayerVelocity.X);
-            tempPlayer.Y = _floor.Bound.Y - _player.HitBox.Height;
+            tempPlayer.Y = _floor.Bound.Y - _player.HitBox.Height + 1; // Somamos 1 para a colisão invadir 1 pixel a mais e o intersect funcionar corretamente.
             _player.Position = tempPlayer;
+        }
+        else
+        {
+            _player.NotGrounded();
         }
     }
 
