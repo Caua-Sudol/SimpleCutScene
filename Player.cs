@@ -86,17 +86,9 @@ public class Player
         }
         else
         { 
-            // if (state.IsKeyDown(Keys.W))
-            // {
-            //     _direction = Direction.Top;
-            // }
-            // if (state.IsKeyDown(Keys.S))
-            // {
-            //     _direction = Direction.Down;
-            // }
             if (state.IsKeyDown(Keys.Space) && _isGrounded)
             {
-                velY = -15f;
+                velY = -10f;
                 _isGrounded = false;
             }
             if (state.IsKeyDown(Keys.LeftShift) && isBreath)
@@ -120,8 +112,6 @@ public class Player
             }
         }
         _velocity = new Vector2(velX, velY);
-        _player.X += _velocity.X;
-        _player.Y += _velocity.Y;  
     }
 
     public void Move(int x, int y)
@@ -130,10 +120,27 @@ public class Player
         _player.X = x;
     }
 
-    public void Walk(int x, int y)
+    public void Walk(float veloctyX, float velocityY)
     {
-        _player.Y += y;
-        _player.X += x;
+        _player.X += veloctyX;
+        _player.Y += velocityY;
+    }
+
+    public void WalkX(float veloctyX)
+    {
+        _player.X += veloctyX;
+    }
+    public void WalkY(float velocityY)
+    {
+        _player.Y += velocityY;
+    }
+    public void StopWalkX()
+    {
+        _player.X += 0;
+    }
+    public void StopWalkY()
+    {
+        _player.Y += 0;
     }
 
     public void StopFalling(float velocityX)
