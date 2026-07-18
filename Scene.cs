@@ -20,6 +20,8 @@ public class Scene
     private const int PlayerStartY = 552;
     private const int PlayerWidth = 16;
     private const int PlayerHeight = 16;
+    private Vector2 PlayerVelocity = new Vector2(10.0f, 10.0f); // Não vai ser const, velocidade vai ficar variando
+    private const float PlayerGravity = -9.81f; //-9.81f
 
     private const int DoorX = 960;
     private const int DoorY = 540;
@@ -60,7 +62,7 @@ public class Scene
         fadeTexture = new Texture2D(graphicsDevice, 1920, 1080);
         fadeTexture.SetData(fadeColor);        
 
-        _player = new Player(PlayerStartX, PlayerStartY, PlayerWidth, PlayerHeight);
+        _player = new Player(PlayerStartX, PlayerStartY, PlayerVelocity, PlayerGravity, PlayerWidth, PlayerHeight);
         _player.LoadContent(graphicsDevice, PlayerWidth, PlayerHeight);
 
         _door = new Door(DoorX, DoorY, DoorWidth, DoorHeight);
@@ -79,7 +81,7 @@ public class Scene
         {
             _player.Update();
 
-            if (PlayerTouchedDoor())
+            if (PlayerTouchedObj(_door.Bound))
             {
                 SecondsPerFrame = 1.0 / 5.0;
                 GameMode = GameMode.FADE_OUT;
@@ -112,12 +114,18 @@ public class Scene
                 GameMode = GameMode.CUTSCENE;
             }
         }
+        if(PlayerTouchedObj(_floor.Bound))
+        {
+            var tempPlayer = _player.Position;
+            _player.StopFalling(PlayerVelocity.X);
+            tempPlayer.Y = _floor.Bound.Y - _player.HitBox.Height;
+            _player.Position = tempPlayer;
+        }
     }
 
-    private bool PlayerTouchedDoor()
+    private bool PlayerTouchedObj(Rectangle obj)
     {
-        // return _player.Bound.Intersects(_door.Bound);
-        return false;
+        return _player.HitBox.Intersects(obj);
     }
 
     private void StartCutscene(Camera camera)
@@ -129,7 +137,7 @@ public class Scene
     private void UpdateCutscene(Camera camera)
     {
         camera.Update(_player);
-        if(_player.Bound.X <= 940)
+        if(_player.Position.X <= 940)
         {
             _player.Walk(10, 0);
         }
@@ -153,7 +161,7 @@ public class Scene
             var cameraTransform = camera.GetTransform();
             spriteBatch.Begin(transformMatrix: cameraTransform);
 
-            _player.Draw(spriteBatch, _player.Bound);
+            _player.Draw(spriteBatch, _player.Position);
             _door.Draw(spriteBatch, _door.Bound);
             _floor.Draw(spriteBatch, _floor.Bound);
             if (GameMode == GameMode.FADE_OUT || GameMode == GameMode.FADE_IN || GameMode == GameMode.CUTSCENE)
