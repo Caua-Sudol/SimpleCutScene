@@ -30,16 +30,6 @@ public class Scene
     private Color [] _platfColor;
     private Texture2D fadeTexture;
 
-    private const int DoorX = 960;
-    private const int DoorY = 540;
-    private const int DoorWidth = 8;
-    private const int DoorHeight = 32;
-
-    private const int FloorX = 700;
-    private const int FloorY = 564;
-    private const int FloorWidth = 600;
-    private const int FloorHeight = 8;
-
     private Color [] _fadeColor;
     private Rectangle _fadeRec;
     private Texture2D _platformeTexture;
