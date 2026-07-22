@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Framework.Devices.Sensors;
 
 namespace DontLikePoetry;
 
@@ -21,6 +22,7 @@ public class Player
     private int _heightPlayer;
 
     public Vector2 _velocity { get; private set;}
+    public float _acc { get; private set;}
     public float _gravity { get; private set;}
     public bool _isGrounded {get; private set;} = false;
     public Direction _direction {get; private set;} = Direction.Rigth;
@@ -33,6 +35,7 @@ public class Player
     {
         _player = new Vector2(x, y);
         _velocity = velocity;
+        _acc = 2.5f;
         _gravity = gravity;
         _widthPlayer = width;
         _heightPlayer = height;
@@ -98,12 +101,12 @@ public class Player
             }
             if (state.IsKeyDown(Keys.D))
             {
-                velX = 10f;
+                velX += _acc;
                 _direction = Direction.Rigth;
             }
             if (state.IsKeyDown(Keys.A))
             {
-                velX = -10f;
+                velX -= _acc;
                 _direction = Direction.Left;
             }
             if(_isGrounded == false)
